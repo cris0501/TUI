@@ -1,6 +1,8 @@
 # tui_basic.py
 import curses, time
 from typing import List, Dict
+from footer import Footer
+from promp import Promp
 
 class SimpleTUI:
     def __init__(self):
@@ -41,32 +43,6 @@ class SimpleTUI:
         stdscr.addnstr(0, 0, left, max(0, width - 1), curses.A_BOLD)
         stdscr.addnstr(0, max(0, width - len(right) - 1), right, len(right), curses.A_DIM)
 
-    def _draw_footer(self, stdscr, y_start, width):
-        # 2 líneas de footer con menú (F1..F9); separador arriba
-        stdscr.hline(y_start, 0, curses.ACS_HLINE, width)
-        labels = [f"[F{i+1}] {item.get('title','')}" for i, item in enumerate(self.menu[:9])]
-        # Particiona labels en dos líneas respetando ancho
-        line1, line2 = "", ""
-        for lab in labels:
-            if not line1 or len(line1) + len(lab) + 2 <= width - 2: # Empty label or len string
-                line1 = (lab if not line1 else line1 + "  " + lab)
-            elif not line2 or len(line2) + len(lab) + 2 <= width - 2:
-                line2 = (lab if not line2 else line2 + "  " + lab)
-            else:
-                # Si tampoco cabe en line2, recorta y añade "…"
-                if len(line2) < width - 3:
-                    line2 = line2[:max(0, width - 5)] + "…"
-                break
-        stdscr.addnstr(y_start + 1, 1, line1, width - 2, curses.A_BOLD)
-        stdscr.addnstr(y_start + 2, 1, line2, width - 2, curses.A_BOLD)
-
-    def _draw_prompt(self, stdscr, y, width):
-        # Línea de prompt (una línea), resaltada
-        stdscr.move(y, 0)
-        stdscr.clrtoeol()
-        prompt = f"> {self.buf}"
-        stdscr.addnstr(y, 0, prompt[-(width-1):], width, curses.A_REVERSE)
-
     def _draw_log(self, stdscr, top, height, width):
         # Muestra logs con posible scroll; deja la última línea libre para el prompt
         view_h = max(0, height - 1)
@@ -106,20 +82,22 @@ class SimpleTUI:
                 {"id":3, "title":"Eliminar"},
             ])
 
+        status_h  = 1
+        footer_h  = 2
+        prompt_h  = 1
+        logs_top = status_h + 1
+
+        self.footer = Footer(stdscr)
+        self.promp = Promp(stdscr)
 
         while True:
             # Tamaño actual y layout:
             H, W = stdscr.getmaxyx()
-            status_h  = 1
-            footer_h  = 2
-            prompt_h  = 1
-            # Orden de arriba a abajo:
-            # 0: status
-            # logs: [1 .. logs_bottom-1]
-            # prompt: at logs_bottom
-            # footer: [logs_bottom+1 .. H-1]
-            logs_top = status_h + 1
             logs_bottom = H - footer_h - prompt_h - 2 # índice de la fila del prompt
+            
+            self.footer.set_metadata({'width':W, 'height':2, 'y_pos':logs_bottom+1})
+            self.promp.set_metadata({'width':W, 'height':1, 'y_pos':logs_bottom})
+            
             if logs_bottom <= logs_top:
                 logs_bottom = logs_top  # evita negativos
 
@@ -164,9 +142,11 @@ class SimpleTUI:
                 # logs
                 self._draw_log(stdscr, logs_top, logs_bottom - logs_top, W)
                 # prompt (en logs_bottom)
-                self._draw_prompt(stdscr, logs_bottom + 1, W)
+                self.promp._draw_(self.buf)
                 # footer (2 líneas, debajo del prompt + separador)
-                self._draw_footer(stdscr, logs_bottom + 2, W)
+                self.footer.set_content(self.menu)
+                self.footer._draw_()
+                #self._draw_footer(stdscr, logs_bottom + 2, W)
                 stdscr.refresh()
                 last_draw = now
 
