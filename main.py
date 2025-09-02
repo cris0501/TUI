@@ -3,6 +3,8 @@ import curses, time
 from typing import List, Dict
 from footer import Footer
 from promp import Promp
+from logs import Logs
+from title import Title
 
 class SimpleTUI:
     def __init__(self):
@@ -12,6 +14,11 @@ class SimpleTUI:
         self.lines: List[str] = []
         self.buf = ""               # prompt buffer
         self.scroll = 0
+        
+        self.title = None
+        self.logs = None
+        self.promp = None
+        self.footer = None
 
     # --- API pública ---
     def set_project(self, name: str):
@@ -23,6 +30,7 @@ class SimpleTUI:
     def set_menu(self, items: List[Dict]):
         """items: [{'id':1,'title':'Refrescar'}, ...]"""
         self.menu = items
+        self.footer.set_content(items)
 
     def append_log(self, *msgs: str):
         self.lines.extend(msgs)
@@ -32,35 +40,6 @@ class SimpleTUI:
     # --- Loop principal ---
     def run(self):
         curses.wrapper(self._main)
-
-    # --- Internos de render ---
-    def _draw_status(self, stdscr, width):
-        # Línea 0: "Proyecto" a la izq, "STATUS" a la der.
-        stdscr.move(0, 0)
-        stdscr.clrtoeol()
-        left = f"{self.project}"
-        right = f"{self.status}"
-        stdscr.addnstr(0, 0, left, max(0, width - 1), curses.A_BOLD)
-        stdscr.addnstr(0, max(0, width - len(right) - 1), right, len(right), curses.A_DIM)
-
-    def _draw_log(self, stdscr, top, height, width):
-        # Muestra logs con posible scroll; deja la última línea libre para el prompt
-        view_h = max(0, height - 1)
-        if view_h <= 0:
-            return
-        start = max(0, len(self.lines) - view_h - self.scroll)
-        end   = len(self.lines) - self.scroll if self.scroll == 0 else len(self.lines) - self.scroll
-        view  = self.lines[start:end]
-        y = top
-        for line in view:
-            # Cortar por ancho
-            for chunk_start in range(0, len(line), width):
-                if y >= top + view_h: break
-                chunk = line[chunk_start:chunk_start+width]
-                stdscr.move(y, 0); stdscr.clrtoeol()
-                stdscr.addnstr(y, 0, chunk, width)
-                y += 1
-            if y >= top + view_h: break
 
     # --- Entrada/loop curses ---
     def _main(self, stdscr):
@@ -72,6 +51,14 @@ class SimpleTUI:
         last_draw = 0.0
         fps = 30.0
         frame = 1.0 / fps
+        
+        self.title = Title(stdscr)
+        self.title.set_project(self.project)
+        self.title.set_status(self.status)
+
+        self.logs = Logs(stdscr)
+        self.promp = Promp(stdscr)
+        self.footer = Footer(stdscr)
 
         # Demo inicial
         self.append_log("Bienvenido a la TUI", "Escribe 'help' y Enter")
@@ -87,16 +74,15 @@ class SimpleTUI:
         prompt_h  = 1
         logs_top = status_h + 1
 
-        self.footer = Footer(stdscr)
-        self.promp = Promp(stdscr)
-
         while True:
             # Tamaño actual y layout:
             H, W = stdscr.getmaxyx()
-            logs_bottom = H - footer_h - prompt_h - 2 # índice de la fila del prompt
-            
-            self.footer.set_metadata({'width':W, 'height':2, 'y_pos':logs_bottom+1})
+            logs_bottom = H - footer_h - prompt_h - 1
+
+            self.title.set_metadata({'width':W, 'height':1, 'y_pos':0})
+            self.logs.set_metadata({'width':W, 'height':logs_bottom, 'y_pos':1})
             self.promp.set_metadata({'width':W, 'height':1, 'y_pos':logs_bottom})
+            self.footer.set_metadata({'width':W, 'height':2, 'y_pos':logs_bottom+1})
             
             if logs_bottom <= logs_top:
                 logs_bottom = logs_top  # evita negativos
@@ -135,18 +121,14 @@ class SimpleTUI:
             # Render a ~60 FPS
             now = time.time()
             if now - last_draw >= frame:
-                # self.append_log(f"H: {H}", f"W: {W}")
                 stdscr.erase()
-                # status
-                self._draw_status(stdscr, W)
-                # logs
-                self._draw_log(stdscr, logs_top, logs_bottom - logs_top, W)
-                # prompt (en logs_bottom)
+
+                self.title._draw_()
+                self.logs._draw_(self.lines, self.scroll)
                 self.promp._draw_(self.buf)
-                # footer (2 líneas, debajo del prompt + separador)
-                self.footer.set_content(self.menu)
+                
                 self.footer._draw_()
-                #self._draw_footer(stdscr, logs_bottom + 2, W)
+
                 stdscr.refresh()
                 last_draw = now
 
@@ -186,11 +168,4 @@ if __name__ == "__main__":
     tui = SimpleTUI()
     tui.set_project("Demo-TUI")
     tui.set_status("IDLE")
-    tui.set_menu([
-        {"id":1, "title":"Refrescar"},
-        {"id":2, "title":"Abrir"},
-        {"id":3, "title":"Eliminar"},
-        {"id":4, "title":"Exportar"},
-        {"id":5, "title":"Ayuda"},
-    ])
     tui.run()
