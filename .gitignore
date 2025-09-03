@@ -1,4 +1,52 @@
-__pycache__/
+# Byte-compiled files
+**/__pycache__/
 *.py[cod]
 *$py.class
+
+# Virtual environment
+env/
+venv/
+ENV/
+.venv/
+.ENV/
+
+# Distribution / Packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Logs and debug files
+*.log
+*.pot
+*.pyo
+*.pyd
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE-specific files
+.vscode/
+.idea/
 *.swp
+*.swo
+
+# Test coverage reports
+htmlcov/
+.coverage
+.tox/
+.nox/
+
+# Pytest cache
+.pytest_cache/
+
+# MyPy type checker
+.mypy_cache/
+
+# Other
+*.sqlite3
+
