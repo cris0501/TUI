@@ -11,7 +11,8 @@ class FooterView(BaseView):
         self._apply_rect(win, rect)
         msg = vm.text()
         try:
-            win.addnstr(0, 1, msg, max(0, rect.w - 2), curses.A_DIM)
+            win.hline(0, 0, curses.ACS_HLINE, rect.w)
+            win.addnstr(1, 1, msg, max(0, rect.w - 2), curses.A_DIM)
         except curses.error:
             pass
         win.noutrefresh()

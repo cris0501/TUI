@@ -37,10 +37,11 @@ def main(stdscr):
     H, W = stdscr.getmaxyx()
     layout.on_resize(H, W)
 
+    # subwin( nlines, ncols, y, x )
     title_win = stdscr.subwin(1, W, 0, 0)
     logs_win  = stdscr.subwin(max(1, H-3), W, 1, 0)
-    prompt_win= stdscr.subwin(1, W, max(0, H-2), 0)
-    footer_win= stdscr.subwin(1, W, max(0, H-1), 0)
+    prompt_win= stdscr.subwin(1, W, max(0, H-3), 0)
+    footer_win= stdscr.subwin(1, W, max(0, H-2), 0)
 
     title_view = TitleView()
     logs_view = LogsView()
@@ -59,24 +60,20 @@ def main(stdscr):
     tick = 0
     while running:
         try:
-            ch = stdscr.getch()
+            key = stdscr.get_wch()
         except curses.error:
-            ch = -1
+            key = None
 
-        if ch == ord('q'):
-            running = False
-        elif ch == curses.KEY_RESIZE:
-            H, W = stdscr.getmaxyx()
-            curses.resizeterm(H, W)
-            layout.on_resize(H, W)
-            redraw.invalidate_all()
-        elif ch == ord('a'):  # Append log line
-            tick += 1
-            logs_store.append(f"Log line {tick} - lorem ipsum...")
-        elif ch == ord('f'):  # Footer change
-            footer_store.set_text(f"Footer actualizado: {time.strftime('%H:%M:%S')} ")
-        elif ch == 9:  # TAB: demo prompt update
-            prompt_store.set_text("prompt: focus demo")  # solo para ver render
+        if isinstance(key, str):
+            prompt_vm.add_text(key)
+        elif isinstance(key, int):
+            if key == curses.KEY_BACKSPACE:
+                prompt_vm.add_text(key)
+            elif key == curses.KEY_RESIZE:
+                H, W = stdscr.getmaxyx()
+                curses.resizeterm(H, W)
+                layout.on_resize(H, W)
+                redraw.invalidate_all()
 
         # Flush si hay algo sucio
         redraw.flush()

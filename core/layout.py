@@ -29,10 +29,11 @@ class LayoutService:
         # ┌ title (1) ┐
         # ├ logs (H-4)┤
         # ├ prompt (1)┤
-        # └ footer (1)┘
+        # ├-----------┤
+        # └ footer (2)┘
         title_h = 1
         prompt_h = 1
-        footer_h = 1
+        footer_h = 2
         logs_h = max(1, H - (title_h + prompt_h + footer_h))
         self._rects = {
             "title": Rect(0, 0, title_h, W),

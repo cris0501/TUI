@@ -16,3 +16,7 @@ class PromptVM:
 
     def text(self) -> str:
         return self._text
+  
+    def add_text(self, msg: str):
+      self._text += msg
+      self._store.set_text(self._text)
