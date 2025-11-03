@@ -11,6 +11,9 @@ from viewmodels.title_vm import TitleVM
 from viewmodels.logs_vm import LogsVM
 from viewmodels.prompt_vm import PromptVM
 from viewmodels.footer_vm import FooterVM
+from utils import Logger
+
+logger = Logger()
 
 def main(stdscr):
     curses.curs_set(0)
@@ -39,9 +42,9 @@ def main(stdscr):
 
     # subwin( nlines, ncols, y, x )
     title_win = stdscr.subwin(1, W, 0, 0)
-    logs_win  = stdscr.subwin(max(1, H-3), W, 1, 0)
-    prompt_win= stdscr.subwin(1, W, max(0, H-3), 0)
-    footer_win= stdscr.subwin(1, W, max(0, H-2), 0)
+    logs_win  = stdscr.subwin(max(1, H-4), W, 1, 0)
+    prompt_win= stdscr.subwin(2, W, max(0, H-3), 0)
+    footer_win= stdscr.subwin(1, W, max(0, H-1), 0)
 
     title_view = TitleView()
     logs_view = LogsView()
@@ -52,7 +55,8 @@ def main(stdscr):
     redraw.bind("logs", logs_win, logs_view, logs_vm)
     redraw.bind("prompt", prompt_win, prompt_view, prompt_vm)
     redraw.bind("footer", footer_win, footer_view, footer_vm)
-
+    
+    logger.info("Init draw")
     redraw.invalidate_all()
     redraw.flush()
 
@@ -75,7 +79,6 @@ def main(stdscr):
                 layout.on_resize(H, W)
                 redraw.invalidate_all()
 
-        # Flush si hay algo sucio
         redraw.flush()
 
         time.sleep(0.01)

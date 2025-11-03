@@ -14,9 +14,10 @@ class LogsView(BaseView):
         for line in lines[-rect.h:]:
             try:
                 win.addnstr(y, 1, line, max(0, rect.w - 2))
-            except curses.error:
-                pass
+            except e:
+                print(f"Error redraw ${e}")
             y += 1
             if y >= rect.h:
                 break
+        #win.border()
         win.noutrefresh()

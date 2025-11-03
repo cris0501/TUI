@@ -1,5 +1,6 @@
 import curses
 from typing import Dict, Set
+from utils import Logger
 
 class RedrawManager:
     def __init__(self):
@@ -8,6 +9,7 @@ class RedrawManager:
         self._wins: Dict[str, object] = {} # Space in term
         self._layout = None
         self._vms: Dict[str, object] = {}
+        self.logger = Logger()
 
     def bind(self, view_id: str, win, view, vm):
         self._views[view_id] = view
@@ -33,9 +35,9 @@ class RedrawManager:
             vm = self._vms.get(vid)
             if view and win and vm:
                 try:
+                    self.logger.info(f"Dibujando {vid}")
                     view.draw(win, self._layout, vm)
                 except Exception as e:
-                    print(f"Error redraw ${view}")
-                    pass
+                    self.logger.error(f"Error redraw ${view}")
         self._dirty.clear()
         curses.doupdate()

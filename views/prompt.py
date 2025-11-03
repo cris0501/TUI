@@ -12,7 +12,9 @@ class PromptView(BaseView):
         text = vm.text()
         label = ">> " + text
         try:
-            win.addnstr(0, 1, label, max(0, rect.w - 2), curses.A_REVERSE)
+            win.hline(0, 0, curses.ACS_HLINE, rect.w)
+            win.addnstr(1, 1, label, max(0, rect.w - 2), curses.A_REVERSE)
         except curses.error:
             pass
+        #win.border()
         win.noutrefresh()

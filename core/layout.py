@@ -27,17 +27,18 @@ class LayoutService:
     def on_resize(self, H: int, W: int):
         # Layout vertical simple:
         # ┌ title (1) ┐
-        # ├ logs (H-4)┤
-        # ├ prompt (1)┤
         # ├-----------┤
-        # └ footer (2)┘
+        # ├ logs (H-4)┤
+        # ├ prompt (2)┤
+        # ├-----------┤
+        # └ footer (1)┘
         title_h = 1
-        prompt_h = 1
-        footer_h = 2
+        prompt_h = 2
+        footer_h = 1
         logs_h = max(1, H - (title_h + prompt_h + footer_h))
         self._rects = {
             "title": Rect(0, 0, title_h, W),
-            "logs": Rect(1, 0, logs_h-1 if logs_h>1 else 1, W),
+            "logs": Rect(1, 0, logs_h if logs_h>1 else 1, W),
             "prompt": Rect(H - (prompt_h + footer_h), 0, prompt_h, W),
             "footer": Rect(H - footer_h, 0, footer_h, W),
         }
