@@ -11,7 +11,7 @@ class Store:
     def name(self) -> str:
         return self._name
 
-    def subscribe(self, cb: Callable[[dict], None]) -> Callable[[], None]:
+    def subscribe(self, cb: Callable[[dict], None]) -> Callable[[], None]: # cb(dic)->none
         self._subs.append(cb)
         def unsubscribe():
             try:
@@ -30,6 +30,13 @@ class Store:
 class FooterStore(Store):
     def __init__(self):
         super().__init__("footer")
+        self.options = {
+            'F1': '--',
+            'F2': '--',
+            'F3': '--',
+            'F4': '--',
+            'F5': '--'
+        }
         self._text = "Listo."
 
     @property

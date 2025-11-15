@@ -16,7 +16,7 @@ from utils import Logger
 logger = Logger()
 
 def main(stdscr):
-    curses.curs_set(0)
+    curses.curs_set(1)
     stdscr.nodelay(True)
     stdscr.keypad(True)
 
@@ -69,10 +69,32 @@ def main(stdscr):
             key = None
 
         if isinstance(key, str):
-            prompt_vm.add_text(key)
+            # Backspace  '\b' '\x7f'
+            if key in ('\b', '\x7f'):
+                prompt_vm.backspace()
+            elif key == '\n' or key == '\r':
+                prompt_vm.submit()
+            else:
+                prompt_vm.insert_char(key)
+                
         elif isinstance(key, int):
-            if key == curses.KEY_BACKSPACE:
-                prompt_vm.add_text(key)
+            if key == curses.KEY_BACKSPACE or key == 127:
+                prompt_vm.backspace()
+            # Supr
+            elif key == curses.KEY_DC:
+                prompt_vm.delete_under_cursor()
+
+            # Arrows path
+            elif key == curses.KEY_LEFT:
+                prompt_vm.move_cursor_left()
+            elif key == curses.KEY_RIGHT:
+                prompt_vm.move_cursor_right()
+            elif key == curses.KEY_HOME:
+                prompt_vm.move_to_start()
+            elif key == curses.KEY_END:
+                prompt_vm.move_to_end()
+
+            # Resize
             elif key == curses.KEY_RESIZE:
                 H, W = stdscr.getmaxyx()
                 curses.resizeterm(H, W)
@@ -80,7 +102,7 @@ def main(stdscr):
                 redraw.invalidate_all()
 
         redraw.flush()
-
+        prompt_view.set_cursor(stdscr, layout, prompt_vm)
         time.sleep(0.01)
 
 if __name__ == "__main__":
