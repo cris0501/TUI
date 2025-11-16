@@ -94,6 +94,20 @@ def main(stdscr):
             elif key == curses.KEY_END:
                 prompt_vm.move_to_end()
 
+            # Action buttons
+            elif key == curses.KEY_F1:
+                footer_vm.action('F1')
+            elif key == curses.KEY_F2:
+                footer_vm.action('F2')
+            elif key == curses.KEY_F3:
+                footer_vm.action('F3')
+            elif key == curses.KEY_F4:
+                footer_vm.action('F4')
+            elif key == curses.KEY_F5:
+                footer_vm.action('F5')
+            elif key == curses.KEY_F9:
+                footer_vm.action('F9')
+
             # Resize
             elif key == curses.KEY_RESIZE:
                 H, W = stdscr.getmaxyx()

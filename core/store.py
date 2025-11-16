@@ -30,22 +30,19 @@ class Store:
 class FooterStore(Store):
     def __init__(self):
         super().__init__("footer")
-        self.options = {
-            'F1': '--',
-            'F2': '--',
-            'F3': '--',
-            'F4': '--',
-            'F5': '--'
+        self._options = {
+            'F1': 'Update',
+            'F2': 'Add',
+            'F3': 'Test'
         }
-        self._text = "Listo."
 
     @property
-    def text(self) -> str:
-        return self._text
+    def options(self) -> Dict:
+        return self._options
 
-    def set_text(self, text: str):
-        self._text = text
-        self._emit("textChanged", {"text": text})
+    def set_option(self, opts: Dict):
+        self._options = opts
+        self._emit("optionsChanged", {"options": opts})
 
 
 class LogsStore(Store):
