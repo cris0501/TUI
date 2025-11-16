@@ -1,4 +1,3 @@
-
 import curses
 from core.layout import LayoutService, Rect
 

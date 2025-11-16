@@ -1,4 +1,3 @@
-
 from typing import Callable, List, Dict, Any
 
 class Store:

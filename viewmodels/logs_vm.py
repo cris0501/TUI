@@ -1,4 +1,3 @@
-
 from typing import List
 from core.store import LogsStore
 from core.redraw import RedrawManager

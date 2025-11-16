@@ -1,4 +1,3 @@
-
 import curses
 from views.base import BaseView
 from core.layout import LayoutService
