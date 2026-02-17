@@ -1,4 +1,6 @@
 import curses
+import os
+import signal
 import threading
 import time
 from collections import deque
@@ -34,10 +36,8 @@ class _InputThread:
                 continue
 
             if isinstance(key, int) and key == curses.KEY_RESIZE:
-                H, W = self._stdscr.getmaxyx()
-                self._post(ResizeEvent(height=H, width=W))
-            else:
-                self._post(KeyEvent(key=key))
+                continue
+            self._post(KeyEvent(key=key))
 
 
 class MessageLoop:
@@ -53,7 +53,12 @@ class MessageLoop:
     def post(self, event: Event):
         self._queue.append(event)
 
+    def _on_sigwinch(self, signum, frame):
+        size = os.get_terminal_size()
+        self.post(ResizeEvent(height=size.lines, width=size.columns))
+
     def run(self):
+        signal.signal(signal.SIGWINCH, self._on_sigwinch)
         self._stdscr.nodelay(False)
         self._input_thread.start()
 

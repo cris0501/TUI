@@ -18,6 +18,8 @@ from tui.services.clock import Clock
 def main(stdscr: curses.window):
     curses.curs_set(1)
     stdscr.keypad(True)
+    stdscr.clear()
+    stdscr.noutrefresh()
 
     # Core dependencies
     state = AppState()
@@ -48,8 +50,8 @@ def main(stdscr: curses.window):
     ui_handlers.register(ctx)
 
     # Clock
-    clock = Clock(ctx)
-    clock.start()
+    # clock = Clock(ctx)
+    # clock.start()
 
     # Seed welcome logs
     state.append_log("Welcome to TUI")
@@ -62,7 +64,8 @@ def main(stdscr: curses.window):
     try:
         ml.run()
     finally:
-        clock.stop()
+        # clock.stop()
+        pass
 
 
 if __name__ == "__main__":

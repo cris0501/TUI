@@ -1,5 +1,5 @@
 from tui.core.context import Context
-from tui.core.events import ResizeEvent
+from tui.core.events import ResizeEvent, LogAppendEvent
 
 
 def register(ctx: Context):
@@ -7,4 +7,5 @@ def register(ctx: Context):
 
 
 def _handle_resize(ctx: Context, event: ResizeEvent):
-    pass
+    ctx.post(LogAppendEvent(line=f"Resized to {event.width}x{event.height}"))
+    ctx.render_queue.invalidate_all(ctx.layout.widget_ids())

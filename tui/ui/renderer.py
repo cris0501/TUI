@@ -48,6 +48,8 @@ class Renderer:
 
     def on_resize(self, stdscr: curses.window, H: int, W: int, state: AppState):
         curses.resizeterm(H, W)
+        stdscr.clear()
+        stdscr.noutrefresh()
         self._layout.recalculate(H, W)
         self.create_windows(stdscr)
         self._render_queue.invalidate_all(self._widgets.keys())

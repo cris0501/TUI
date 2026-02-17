@@ -15,6 +15,7 @@ class PromptWidget(Widget):
         text = ">> " + state.prompt_text
         try:
             win.hline(0, 0, curses.ACS_HLINE, rect.w)
+            win.attrset(0)
             win.addnstr(1, 1, text, max(0, rect.w - 2), curses.A_BOLD)
         except curses.error:
             pass

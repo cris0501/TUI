@@ -19,6 +19,7 @@ class TitleWidget(Widget):
             win.addnstr(0, 1, title, max(0, section - 1), curses.A_BOLD)
             col = max(section, rect.w - len(status) - 1)
             win.addnstr(0, col, status, max(0, section - 2), curses.A_BOLD)
+            win.hline(1, 0, curses.ACS_HLINE, rect.w)
         except curses.error:
             pass
         win.noutrefresh()
