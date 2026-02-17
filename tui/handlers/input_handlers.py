@@ -1,5 +1,6 @@
 import curses
 
+from tui.utils import Logger
 from tui.core.context import Context
 from tui.core.events import (
     ActionEvent,
@@ -10,11 +11,14 @@ from tui.core.events import (
     KeyEvent,
     QuitEvent,
     SubmitEvent,
+    UpdateActionsEvent,
+    LogAppendEvent
 )
 
 
 def register(ctx: Context):
     ctx.bus.subscribe(KeyEvent, lambda ev: _handle_key(ctx, ev))
+    ctx.bus.subscribe(UpdateActionsEvent, lambda ev: _handle_actions(ctx, ev))
 
 
 def _handle_key(ctx: Context, event: KeyEvent):
@@ -53,3 +57,9 @@ def _handle_key(ctx: Context, event: KeyEvent):
             ctx.post(ActionEvent(key="F5"))
         elif key == curses.KEY_F9:
             ctx.post(QuitEvent())
+
+def _handle_actions(ctx: Context, event: UpdateActionsEvent):
+    logger = Logger()
+    ctx.state.actions = event.actions
+    ctx.post(LogAppendEvent(line=f"Current actions: {ctx.state.actions}"))
+    ctx.render_queue.invalidate("footer")

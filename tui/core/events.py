@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-
+from typing import Dict
 
 @dataclass(frozen=True)
 class Event:
@@ -22,6 +22,10 @@ class ResizeEvent(Event):
 @dataclass(frozen=True)
 class TickEvent(Event):
     tick: int
+
+@dataclass(frozen=True)
+class UpdateActionsEvent(Event):
+    actions: Dict[str, str]
 
 
 # --- Semantic events (translated by input_handlers) ---

@@ -12,8 +12,7 @@ from tui.ui.widgets.main_panel import MainPanelWidget
 from tui.ui.widgets.prompt import PromptWidget
 from tui.ui.widgets.footer import FooterWidget
 from tui.handlers import input_handlers, domain_handlers, ui_handlers
-from tui.services.clock import Clock
-
+from tui.services.socket import SocketService
 
 def main(stdscr: curses.window):
     curses.curs_set(1)
@@ -49,14 +48,13 @@ def main(stdscr: curses.window):
     domain_handlers.register(ctx)
     ui_handlers.register(ctx)
 
-    # Clock
-    # clock = Clock(ctx)
-    # clock.start()
+    # Socket
+    socket = SocketService(ctx)
+    socket.start()
 
     # Seed welcome logs
     state.append_log("Welcome to TUI")
     state.append_log("Type text and press Enter to add log entries")
-    state.append_log("F1-F5: actions | F9: exit")
 
     # Initial full draw
     render_queue.invalidate_all(layout.widget_ids())
@@ -65,6 +63,7 @@ def main(stdscr: curses.window):
         ml.run()
     finally:
         # clock.stop()
+        socket.stop()
         pass
 
 

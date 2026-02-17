@@ -10,11 +10,11 @@ class Logger:
         return cls._instance
 
     def _initialize_logger(self):
-        self._logger = logging.getLogger("MiLogger")
+        self._logger = logging.getLogger("Debug_Logger")
         self._logger.setLevel(logging.DEBUG)
 
         if not self._logger.handlers:
-            file_handler = logging.FileHandler('mi_debug.log')
+            file_handler = logging.FileHandler('debug.log')
             formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
             file_handler.setFormatter(formatter)
 

@@ -5,7 +5,7 @@ import threading
 import time
 from collections import deque
 
-from utils import Logger
+from tui.utils import Logger
 from tui.core.context import Context
 from tui.core.events import Event, KeyEvent, ResizeEvent
 from tui.ui.renderer import Renderer

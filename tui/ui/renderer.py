@@ -1,6 +1,6 @@
 import curses
 
-from utils import Logger
+from tui.utils import Logger
 from tui.ui.layout import Layout
 from tui.ui.widgets.base import Widget
 from tui.state.app_state import AppState
