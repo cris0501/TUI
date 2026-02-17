@@ -23,6 +23,7 @@ class Context:
         self.layout = layout
         self.bus = bus
         self._post: Callable[[Event], None] | None = None
+        self.socket = None
 
     def set_post(self, fn: Callable[[Event], None]):
         self._post = fn

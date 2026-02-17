@@ -1,3 +1,10 @@
+from enum import Enum, auto
+
+class PromptMode(Enum):
+    NORMAL = auto()
+    AWAITING_IP = auto()
+    AWAITING_PORT = auto()
+
 class AppState:
     def __init__(self):
         self.app_name: str = "TUI"
@@ -11,8 +18,10 @@ class AppState:
             "F2": "Add",
             "F3": "Test",
         }
+        self.prompt_mode = PromptMode.NORMAL
+        self.temp_ip = "127.0.0.1"
+        self.temp_port = 5000
         self.running: bool = True
-        self.tick: int = 0
 
     def append_log(self, line: str):
         self.log_lines.append(line)

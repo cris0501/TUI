@@ -59,7 +59,6 @@ def _handle_key(ctx: Context, event: KeyEvent):
             ctx.post(QuitEvent())
 
 def _handle_actions(ctx: Context, event: UpdateActionsEvent):
-    logger = Logger()
     ctx.state.actions = event.actions
     ctx.post(LogAppendEvent(line=f"Current actions: {ctx.state.actions}"))
     ctx.render_queue.invalidate("footer")

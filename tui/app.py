@@ -12,7 +12,6 @@ from tui.ui.widgets.main_panel import MainPanelWidget
 from tui.ui.widgets.prompt import PromptWidget
 from tui.ui.widgets.footer import FooterWidget
 from tui.handlers import input_handlers, domain_handlers, ui_handlers
-from tui.services.socket import SocketService
 
 def main(stdscr: curses.window):
     curses.curs_set(1)
@@ -47,10 +46,6 @@ def main(stdscr: curses.window):
     input_handlers.register(ctx)
     domain_handlers.register(ctx)
     ui_handlers.register(ctx)
-
-    # Socket
-    socket = SocketService(ctx)
-    socket.start()
 
     # Seed welcome logs
     state.append_log("Welcome to TUI")

@@ -23,10 +23,21 @@ class ResizeEvent(Event):
 class TickEvent(Event):
     tick: int
 
+
 @dataclass(frozen=True)
 class UpdateActionsEvent(Event):
     actions: Dict[str, str]
 
+
+@dataclass(frozen=True)
+class UpdateStatus(Event):
+    status: str
+
+
+@dataclass(frozen=True)
+class StartSocketEvent(Event):
+    host: str
+    port: int
 
 # --- Semantic events (translated by input_handlers) ---
 

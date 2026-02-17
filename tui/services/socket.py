@@ -6,10 +6,10 @@ from tui.core.events import (UpdateActionsEvent, LogAppendEvent)
 from tui.utils import Logger
 
 class SocketService:
-    def __init__(self, ctx: Context, host: str = '127.0.0.1', port: int = 5000):
+    def __init__(self, ctx: Context):
         self._ctx = ctx
-        self._host = host
-        self._port = port
+        self._host = ctx.state.temp_ip
+        self._port = ctx.state.temp_port
         self._running = False
         self._thread: threading.Thread | None = None
         self._server_socket = None
@@ -44,13 +44,13 @@ class SocketService:
                 except Exception as e:
                     print(f"Error procesando socket data: {e}")
 
+
     def _handle_payload(self, data: dict):
         event_type = data.get('event_type')
         payload = data.get('payload', [])
         actions = data.get('actions', [])
 
-        if event_type == 'update_actions':
-            # Hateoas: ["F1:Save", "F2:Delete", "ESC:Back"]
+        if len(actions):
             actions_dict = {}
             for item in actions:
                 if ":" in item:
