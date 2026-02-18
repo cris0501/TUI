@@ -3,6 +3,7 @@ import curses
 from tui.ui.widgets.base import Widget
 from tui.ui.layout import Rect
 from tui.state.app_state import (AppState, PromptMode)
+from tui.ui import colors
 
 
 class PromptWidget(Widget):
@@ -21,9 +22,10 @@ class PromptWidget(Widget):
 
         text = prefix + state.prompt_text
         try:
-            win.hline(0, 0, curses.ACS_HLINE, rect.w)
-            win.attrset(0)
-            win.addnstr(1, 1, text, max(0, rect.w - 2), curses.A_BOLD)
+            win.hline(0, 0, curses.ACS_HLINE, rect.w,
+                      curses.color_pair(colors.PAIR_DEFAULT))
+            win.addnstr(1, 1, text, max(0, rect.w - 2),
+                        curses.color_pair(colors.PAIR_PROMPT) | curses.A_BOLD)
         except curses.error:
             pass
         win.noutrefresh()

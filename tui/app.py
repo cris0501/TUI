@@ -12,9 +12,11 @@ from tui.ui.widgets.main_panel import MainPanelWidget
 from tui.ui.widgets.prompt import PromptWidget
 from tui.ui.widgets.footer import FooterWidget
 from tui.handlers import input_handlers, domain_handlers, ui_handlers
+from tui.ui.colors import init_colors
 
 def main(stdscr: curses.window):
     curses.curs_set(1)
+    init_colors()
     stdscr.keypad(True)
     stdscr.clear()
     stdscr.noutrefresh()
@@ -48,7 +50,7 @@ def main(stdscr: curses.window):
     ui_handlers.register(ctx)
 
     # Seed welcome logs
-    state.append_log("Welcome to TUI")
+    state.append_log("Welcome to TUI / For C. Ramirez")
     state.append_log("Type text and press Enter to add log entries")
 
     # Initial full draw
@@ -58,7 +60,8 @@ def main(stdscr: curses.window):
         ml.run()
     finally:
         # clock.stop()
-        socket.stop()
+        if ctx.socket:
+            ctx.socket.stop()
         pass
 
 

@@ -3,6 +3,7 @@ import curses
 from tui.ui.widgets.base import Widget
 from tui.ui.layout import Rect
 from tui.state.app_state import AppState
+from tui.ui import colors
 
 
 class FooterWidget(Widget):
@@ -16,8 +17,10 @@ class FooterWidget(Widget):
         exit_label = "F9: Exit"
         section = rect.w - (len(exit_label) + 2)
         try:
-            win.addnstr(0, 1, opts, max(0, section), curses.A_DIM)
-            win.addnstr(0, max(1, section + 1), exit_label, len(exit_label), curses.A_BOLD)
+            win.addnstr(0, 1, opts, max(0, section),
+                        curses.color_pair(colors.PAIR_FOOTER))
+            win.addnstr(0, max(1, section + 1), exit_label, len(exit_label),
+                        curses.color_pair(colors.PAIR_ACCENT) | curses.A_BOLD)
         except curses.error:
             pass
         win.noutrefresh()
