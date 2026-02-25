@@ -12,6 +12,7 @@ from tui.core.events import (
     QuitEvent,
     SubmitEvent,
     UpdateActionsEvent,
+    UpdateSystemActionsEvent,
     LogAppendEvent
 )
 
@@ -19,6 +20,7 @@ from tui.core.events import (
 def register(ctx: Context):
     ctx.bus.subscribe(KeyEvent, lambda ev: _handle_key(ctx, ev))
     ctx.bus.subscribe(UpdateActionsEvent, lambda ev: _handle_actions(ctx, ev))
+    ctx.bus.subscribe(UpdateSystemActionsEvent, lambda ev: _handle_system_actions(ctx, ev))
 
 
 def _handle_key(ctx: Context, event: KeyEvent):
@@ -29,6 +31,8 @@ def _handle_key(ctx: Context, event: KeyEvent):
             ctx.post(BackspaceEvent())
         elif key in ("\n", "\r"):
             ctx.post(SubmitEvent(text=ctx.state.prompt_text))
+        elif key == "\x03":  # Ctrl+C
+            ctx.post(QuitEvent())
         else:
             ctx.post(InsertCharEvent(char=key))
 
@@ -55,10 +59,16 @@ def _handle_key(ctx: Context, event: KeyEvent):
             ctx.post(ActionEvent(key="F4"))
         elif key == curses.KEY_F5:
             ctx.post(ActionEvent(key="F5"))
+        elif key == curses.KEY_F8:
+            ctx.post(ActionEvent(key="F8"))
         elif key == curses.KEY_F9:
             ctx.post(QuitEvent())
 
 def _handle_actions(ctx: Context, event: UpdateActionsEvent):
     ctx.state.actions = event.actions
     ctx.post(LogAppendEvent(line=f"Current actions: {ctx.state.actions}"))
+    ctx.render_queue.invalidate("footer")
+
+def _handle_system_actions(ctx: Context, event: UpdateSystemActionsEvent):
+    ctx.state.system_actions = event.system_actions
     ctx.render_queue.invalidate("footer")

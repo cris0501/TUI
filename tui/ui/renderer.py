@@ -3,7 +3,7 @@ import curses
 from tui.utils import Logger
 from tui.ui.layout import Layout
 from tui.ui.widgets.base import Widget
-from tui.state.app_state import AppState
+from tui.state.app_state import AppState, PromptMode
 from tui.state.render_queue import RenderQueue
 
 logger = Logger()
@@ -57,9 +57,17 @@ class Renderer:
 
     def position_cursor(self, stdscr: curses.window, state: AppState):
         prompt_rect = self._layout.get_rect("prompt")
+        prefixes = {
+            PromptMode.NORMAL: ">> ",
+            PromptMode.AWAITING_IP: f"[ip:{state.temp_ip}] > ",
+            PromptMode.AWAITING_PORT: f"[port:{state.temp_port}] > ",
+        }
+        prefix = prefixes.get(state.prompt_mode, ">> ")
         cursor_y = prompt_rect.y + 1
-        cursor_x = prompt_rect.x + 4 + state.cursor_idx
+        cursor_x = prompt_rect.x + 1 + len(prefix) + state.cursor_idx
         try:
             stdscr.move(cursor_y, cursor_x)
+            stdscr.noutrefresh()
+            curses.doupdate()
         except curses.error:
             pass

@@ -18,6 +18,7 @@ class AppState:
             "F2": "Add",
             "F3": "Test",
         }
+        self.system_actions: dict[str, str] = {}
         self.prompt_mode = PromptMode.NORMAL
         self.temp_ip = "127.0.0.1"
         self.temp_port = 5000

@@ -1,4 +1,5 @@
 import logging
+import traceback
 
 class Logger:
     _instance = None
@@ -26,5 +27,8 @@ class Logger:
     def warning(self, message):
         self._logger.warning(message)
 
-    def error(self, message):
-        self._logger.error(message)
+    def error(self, message, exc_info=False):
+        if exc_info:
+            self._logger.error(message, exc_info=True)
+        else:
+            self._logger.error(message)

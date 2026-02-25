@@ -1,18 +1,29 @@
 from tui.core.context import Context
 from tui.state.app_state import PromptMode
 from tui.core.events import (
-    ActionEvent,
-    BackspaceEvent,
-    CursorMoveEvent,
-    DeleteEvent,
-    InsertCharEvent,
-    LogAppendEvent,
-    QuitEvent,
-    SubmitEvent,
-    UpdateStatus,
-    StartSocketEvent,
-)
+        ActionEvent,
+        BackspaceEvent,
+        CursorMoveEvent,
+        DeleteEvent,
+        InsertCharEvent,
+        LogAppendEvent,
+        QuitEvent,
+        SubmitEvent,
+        UpdateStatus,
+        StartSocketEvent,
+        UpdateSystemActionsEvent)
+
+from tui.handlers.status_handlers import (
+        _handle_normal_mode,
+        _handle_ip_mode,
+        _handle_port_mode)
 from tui.services.socket import SocketService
+
+STATE_HANDLERS = {
+    PromptMode.NORMAL: _handle_normal_mode,
+    PromptMode.AWAITING_IP: _handle_ip_mode,
+    PromptMode.AWAITING_PORT: _handle_port_mode,
+}
 
 
 def register(ctx: Context):
@@ -77,39 +88,10 @@ def _submit(ctx: Context, event: SubmitEvent):
     state = ctx.state
     input_text = event.text.strip()
 
-    if state.prompt_mode == PromptMode.NORMAL:
-        if input_text == "disconect_server" and ctx.socket:
-            ctx.socket.stop()
-            ctx.socket = None
-            ctx.post(UpdateStatus(status="IDLE"))
-            ctx.post(LogAppendEvent(line="> Socket cerrado"))
-        elif input_text == "server" and not ctx.socket:
-            ctx.post(LogAppendEvent(line="Configurando Socket Service..."))
-            state.prompt_mode = PromptMode.AWAITING_IP
-            ctx.post(UpdateStatus(status="Server..."))
-        else:
-            # Comportamiento normal para otros comandos
-            ctx.post(LogAppendEvent(line=f"> {input_text}"))
+    handler = STATE_HANDLERS.get(state.prompt_mode)
+    if handler:
+        handler(ctx, input_text)
 
-    elif state.prompt_mode == PromptMode.AWAITING_IP and not ctx.socket:
-        # Guardamos la IP (podrías validar con regex aquí)
-        state.temp_ip = input_text if input_text else "127.0.0.1"
-        state.prompt_mode = PromptMode.AWAITING_PORT
-        ctx.post(LogAppendEvent(line=f"IP fijada: {state.temp_ip}"))
-
-    elif state.prompt_mode == PromptMode.AWAITING_PORT and not ctx.socket:
-        try:
-            state.temp_port = int(input_text) if input_text else 5000
-            ctx.post(LogAppendEvent(line=f"Iniciando server en {state.temp_ip}:{state.temp_port}..."))
-            ctx.post(StartSocketEvent(host=state.temp_ip, port=state.temp_port))
-            state.prompt_mode = PromptMode.NORMAL
-        except ValueError:
-            ctx.post(LogAppendEvent(line="[!] Puerto inválido. Intenta de nuevo."))
-            state.prompt_mode = PromptMode.NORMAL
-            ctx.post(UpdateStatus(status="IDLE"))
-
-
-    # Limpieza común
     state.prompt_text = ""
     state.cursor_idx = 0
     ctx.render_queue.invalidate("prompt")
@@ -117,7 +99,14 @@ def _submit(ctx: Context, event: SubmitEvent):
 
 def _action(ctx: Context, event: ActionEvent):
     state = ctx.state
-    action_name = state.actions.get(event.key, event.key)
+    if event.key == "F8" and ctx.socket:
+        ctx.socket.stop()
+        ctx.socket = None
+        ctx.post(UpdateStatus(status="IDLE"))
+        ctx.post(LogAppendEvent(line="> Socket cerrado"))
+        ctx.post(UpdateSystemActionsEvent(system_actions={}))
+        return
+    action_name = state.actions.get(event.key, state.system_actions.get(event.key, event.key))
     ctx.post(LogAppendEvent(line=f"[{event.key}] {action_name}"))
 
 

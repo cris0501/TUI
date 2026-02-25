@@ -30,6 +30,11 @@ class UpdateActionsEvent(Event):
 
 
 @dataclass(frozen=True)
+class UpdateSystemActionsEvent(Event):
+    system_actions: Dict[str, str]
+
+
+@dataclass(frozen=True)
 class UpdateStatus(Event):
     status: str
 

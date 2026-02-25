@@ -72,6 +72,8 @@ class MessageLoop:
                 self._renderer.flush(state)
                 self._renderer.position_cursor(self._stdscr, state)
                 time.sleep(0.016)
+        except KeyboardInterrupt:
+            state.running = False
         finally:
             self._input_thread.stop()
 
@@ -93,4 +95,4 @@ class MessageLoop:
                 try:
                     handler(event)
                 except Exception as e:
-                    logger.error(f"Handler error for {type(event).__name__}: {e}")
+                    logger.error(f"Handler error for {type(event).__name__}: {e}", exc_info=True)
