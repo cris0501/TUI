@@ -1,86 +1,48 @@
-from dataclasses import dataclass
+from __future__ import annotations
+
 from typing import Dict
 
-@dataclass(frozen=True)
-class Event:
-    pass
+from textual.message import Message
 
 
-# --- Raw input events ---
-
-@dataclass(frozen=True)
-class KeyEvent(Event):
-    key: str | int
-
-
-@dataclass(frozen=True)
-class ResizeEvent(Event):
-    height: int
-    width: int
+class LogAppendEvent(Message):
+    def __init__(self, line: str) -> None:
+        super().__init__()
+        self.line = line
 
 
-@dataclass(frozen=True)
-class TickEvent(Event):
-    tick: int
+class UpdateStatus(Message):
+    def __init__(self, status: str) -> None:
+        super().__init__()
+        self.status = status
 
 
-@dataclass(frozen=True)
-class UpdateActionsEvent(Event):
-    actions: Dict[str, str]
+class ActionEvent(Message):
+    def __init__(self, key: str) -> None:
+        super().__init__()
+        self.key = key
 
 
-@dataclass(frozen=True)
-class UpdateSystemActionsEvent(Event):
-    system_actions: Dict[str, str]
+class UpdateActionsEvent(Message):
+    def __init__(self, actions: Dict[str, str]) -> None:
+        super().__init__()
+        self.actions = actions
 
 
-@dataclass(frozen=True)
-class UpdateStatus(Event):
-    status: str
+class UpdateSystemActionsEvent(Message):
+    def __init__(self, system_actions: Dict[str, str]) -> None:
+        super().__init__()
+        self.system_actions = system_actions
 
 
-@dataclass(frozen=True)
-class StartSocketEvent(Event):
-    host: str
-    port: int
-
-# --- Semantic events (translated by input_handlers) ---
-
-@dataclass(frozen=True)
-class InsertCharEvent(Event):
-    char: str
+class StartSocketEvent(Message):
+    def __init__(self, host: str, port: int) -> None:
+        super().__init__()
+        self.host = host
+        self.port = port
 
 
-@dataclass(frozen=True)
-class BackspaceEvent(Event):
-    pass
-
-
-@dataclass(frozen=True)
-class DeleteEvent(Event):
-    pass
-
-
-@dataclass(frozen=True)
-class CursorMoveEvent(Event):
-    direction: str  # "left" | "right" | "home" | "end"
-
-
-@dataclass(frozen=True)
-class SubmitEvent(Event):
-    text: str
-
-
-@dataclass(frozen=True)
-class ActionEvent(Event):
-    key: str  # "F1" | "F2" | ...
-
-
-@dataclass(frozen=True)
-class QuitEvent(Event):
-    pass
-
-
-@dataclass(frozen=True)
-class LogAppendEvent(Event):
-    line: str
+class TickEvent(Message):
+    def __init__(self, tick: int) -> None:
+        super().__init__()
+        self.tick = tick
