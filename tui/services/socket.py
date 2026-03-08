@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from tui.app import TUIApp
 
-from tui.core.events import UpdateActionsEvent, StopSocketEvent
+from tui.core.events import UpdateLinksEvent, StopSocketEvent, ExecAction
 from tui.utils import Logger
 
 
@@ -50,12 +50,19 @@ class SocketService:
                 break
 
     def _handle_payload(self, data: dict) -> None:
-        actions = data.get("actions", [])
-        if actions:
-            actions_dict = {}
-            for item in actions:
+        links = data.get("_links", [])
+        actions = data.get("_actions", [])
+
+        if links:
+            links_dict = {}
+            for item in links:
                 if ":" in item:
                     key, title = item.split(":", 1)
-                    actions_dict[key.strip()] = title.strip()
-            self._app.post_message(UpdateActionsEvent(actions=actions_dict))
+                    links_dict[key.strip()] = title.strip()
+            self._app.post_message(UpdateLinksEvent(links=links_dict))
+
+        if actions:
+            self.logger.info(actions)
+            for act in actions:
+                self._app.post_message(ExecAction(action=act))
 

@@ -4,15 +4,17 @@ from textual.app import App, ComposeResult
 from textual import events
 from textual.widgets import Input
 
+from tui.utils import Logger
 from tui.state.app_state import AppState, PromptMode
 from tui.core.events import (
     ActionEvent,
     LogAppendEvent,
-    UpdateActionsEvent,
+    UpdateLinksEvent,
     UpdateSystemActionsEvent,
     UpdateStatus,
     StartSocketEvent,
-    StopSocketEvent
+    StopSocketEvent,
+    ExecAction
 )
 from tui.ui.widgets.title import TitleBar
 from tui.ui.widgets.main_panel import MainPanel
@@ -48,6 +50,7 @@ class TUIApp(App):
         super().__init__()
         self.state = AppState()
         self.socket_service: SocketService | None = None
+        self.logger = Logger()
 
     def compose(self) -> ComposeResult:
         yield TitleBar()
@@ -93,9 +96,9 @@ class TUIApp(App):
     def on_action_event(self, event: ActionEvent) -> None:
         self._handle_action(event.key)
 
-    def on_update_actions_event(self, event: UpdateActionsEvent) -> None:
-        self.state.actions = event.actions
-        self.post_message(LogAppendEvent(line=f"Current actions: {self.state.actions}"))
+    def on_update_links_event(self, event: UpdateLinksEvent) -> None:
+        self.state.links = event.links
+        self.post_message(LogAppendEvent(line=f"Current actions: {self.state.links}"))
         self.query_one(FooterBar).refresh()
 
     def on_update_system_actions_event(self, event: UpdateSystemActionsEvent) -> None:
@@ -109,6 +112,11 @@ class TUIApp(App):
     
     def on_stop_socket_event(self, event: StopSocketEvent) -> None:
         self.notify("Socket detenido", timeout=5)
+
+    def on_exec_action(self, event: ExecAction) -> None:
+        self.logger.info(event.kind)
+        if event.kind == "notify":
+            self.notify( event.body, title=event.title, severity=event.type, timeout=5 )
 
     # --- Helpers ---
 

@@ -23,11 +23,18 @@ class ActionEvent(Message):
         self.key = key
 
 
-class UpdateActionsEvent(Message):
-    def __init__(self, actions: Dict[str, str]) -> None:
+class UpdateLinksEvent(Message):
+    def __init__(self, links: Dict[str, str]) -> None:
         super().__init__()
-        self.actions = actions
+        self.links = links
 
+class ExecAction(Message):
+    def __init__(self, action: Dict[str, str]) -> None:
+        super().__init__()
+        self.kind = action.get("kind", "")
+        self.type = action.get("type", "information")
+        self.title = action.get("title", "")
+        self.body = action.get("body", "")
 
 class UpdateSystemActionsEvent(Message):
     def __init__(self, system_actions: Dict[str, str]) -> None:

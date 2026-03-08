@@ -48,12 +48,27 @@ The app can act as a TCP server that receives JSON payloads to update its action
 
 Start the server from the prompt by typing `server`, then providing the IP and port when prompted.
 
-### Payload format
+### Payload format example
 
 ```json
 {
-  "actions": ["F1: MyAction", "F2: OtherAction"]
+  "payload": "Body response",
+  "_actions": [
+    {"kind":"notify","type":"information","body":"Test notify"},
+    {"kind":"notify","type":"error","body":"Test error", "title":"Fatal error"}
+  ],
+  "_links": [
+    "F1:Load file",
+    "F2:Return home",
+    "F3: Cancel action"
+  ]
 }
+```
+
+### Example using netcat
+
+```bash
+echo '{"_actions": [{"kind":"notify","type":"information","body":"Test notify"},{"kind":"notify","type":"error","body":"Test notify", "title":"Chale"}], "_links": ["F1:Load file", "F2:Return home", "F3: Cancel action"], "payload": "None"}' | nc localhost 5000
 ```
 
 Disconnect by typing `disconnect` or pressing `F8`.
@@ -127,3 +142,4 @@ Edit the widget's `render()` method (returns a Rich `Text`) or its `compose()` l
 1. Create it in `ui/widgets/`
 2. Yield it in `TUIApp.compose()`
 3. Add a CSS size rule in `TUIApp.CSS`
+

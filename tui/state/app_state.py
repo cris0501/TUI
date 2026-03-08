@@ -13,7 +13,7 @@ class AppState:
         self.status: str = "IDLE"
         self.log_lines: list[str] = []
         self.max_log_lines: int = 500
-        self.actions: dict[str, str] = {
+        self.links: dict[str, str] = {
             "F1": "Update",
             "F2": "Add",
             "F3": "Test",
@@ -27,3 +27,4 @@ class AppState:
         self.log_lines.append(line)
         if len(self.log_lines) > self.max_log_lines:
             self.log_lines = self.log_lines[-self.max_log_lines:]
+

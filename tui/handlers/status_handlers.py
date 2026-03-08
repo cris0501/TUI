@@ -22,13 +22,12 @@ def handle_normal_mode(app: "TUIApp", input_text: str) -> None:
         state.prompt_mode = PromptMode.AWAITING_IP
         app.post_message(UpdateStatus(status="Server..."))
 
-    elif input_text in ("disconnect", "disconnect_server") and app.socket_service:
+    elif input_text == "disconnect" and app.socket_service:
         app.socket_service.stop()
         app.socket_service = None
         app.post_message(UpdateStatus(status="IDLE"))
         app.post_message(LogAppendEvent(line="> Socket cerrado"))
         app.post_message(UpdateSystemActionsEvent(system_actions={}))
-        exit(0)
 
     else:
         app.post_message(LogAppendEvent(line=f"> {input_text}"))

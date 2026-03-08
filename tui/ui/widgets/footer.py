@@ -11,7 +11,7 @@ class FooterBar(Widget):
         sys_parts.append("F9: Exit")
         sys_str = " | ".join(sys_parts)
 
-        opts = " | ".join(f"{k}: {v}" for k, v in state.actions.items())
+        opts = " | ".join(f"{k}: {v}" for k, v in state.links.items())
         padding = max(1, width - len(opts) - len(sys_str) - 2)
 
         return Text.assemble(
@@ -19,3 +19,4 @@ class FooterBar(Widget):
             (" " * padding, ""),
             (f"{sys_str} ", "bold magenta"),
         )
+
