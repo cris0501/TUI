@@ -12,6 +12,7 @@ from tui.core.events import (
     UpdateSystemActionsEvent,
     UpdateStatus,
     StartSocketEvent,
+    StopSocketEvent
 )
 from tui.ui.widgets.title import TitleBar
 from tui.ui.widgets.main_panel import MainPanel
@@ -104,6 +105,10 @@ class TUIApp(App):
     def on_start_socket_event(self, event: StartSocketEvent) -> None:
         self.socket_service = SocketService(self, event.host, event.port)
         self.run_worker(self.socket_service.run, thread=True)
+        self.notify("Socket abierto", timeout=5)
+    
+    def on_stop_socket_event(self, event: StopSocketEvent) -> None:
+        self.notify("Socket detenido", timeout=5)
 
     # --- Helpers ---
 

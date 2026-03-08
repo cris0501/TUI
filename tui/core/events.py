@@ -41,8 +41,14 @@ class StartSocketEvent(Message):
         self.host = host
         self.port = port
 
+class StopSocketEvent(Message):
+    def __init__(self) -> None:
+        super().__init__()
+        pass
+
 
 class TickEvent(Message):
     def __init__(self, tick: int) -> None:
         super().__init__()
         self.tick = tick
+

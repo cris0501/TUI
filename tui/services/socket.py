@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from tui.app import TUIApp
 
-from tui.core.events import UpdateActionsEvent
+from tui.core.events import UpdateActionsEvent, StopSocketEvent
 from tui.utils import Logger
 
 
@@ -24,6 +24,7 @@ class SocketService:
         self._running = False
         if self._server_socket:
             self._server_socket.close()
+            self._app.post_message(StopSocketEvent())
 
     def run(self) -> None:
         """Blocking run — called via run_worker(..., thread=True)."""
@@ -57,3 +58,4 @@ class SocketService:
                     key, title = item.split(":", 1)
                     actions_dict[key.strip()] = title.strip()
             self._app.post_message(UpdateActionsEvent(actions=actions_dict))
+

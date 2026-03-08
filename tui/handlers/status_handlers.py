@@ -28,6 +28,7 @@ def handle_normal_mode(app: "TUIApp", input_text: str) -> None:
         app.post_message(UpdateStatus(status="IDLE"))
         app.post_message(LogAppendEvent(line="> Socket cerrado"))
         app.post_message(UpdateSystemActionsEvent(system_actions={}))
+        exit(0)
 
     else:
         app.post_message(LogAppendEvent(line=f"> {input_text}"))
@@ -54,3 +55,4 @@ def handle_port_mode(app: "TUIApp", input_text: str) -> None:
         app.post_message(UpdateStatus(status="IDLE"))
 
     state.prompt_mode = PromptMode.NORMAL
+
