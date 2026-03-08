@@ -41,18 +41,7 @@ _FKEY_MAP = {
 
 
 class TUIApp(App):
-    CSS = """
-    Screen   { layout: vertical; }
-    TitleBar { height: 2; }
-    MainPanel { height: 1fr; }
-    PromptBar { height: 2; }
-    FooterBar { height: 1; }
-
-    PromptBar Rule { margin: 0; }
-    PromptBar Horizontal { height: 1; background: $surface; }
-    PromptBar Label { height: 1; width: auto; padding: 0 0 0 1; color: $text; }
-    PromptBar Input { border: none; height: 1; width: 1fr; padding: 0; }
-    """
+    CSS_PATH = "ui/style.tcss"
 
     def __init__(self) -> None:
         super().__init__()
@@ -142,3 +131,4 @@ class TUIApp(App):
 
 if __name__ == "__main__":
     TUIApp().run()
+

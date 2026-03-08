@@ -16,3 +16,4 @@ class PromptBar(Widget):
 
     def focus_input(self) -> None:
         self.query_one(Input).focus()
+
